@@ -30,7 +30,6 @@ app.get('/', function (req, res) {
 
 io.on("connect", function(socket){
     players ++; 
-    console.log(players);
 
     socket.on("Player Number", function() {
         socket.emit("Joined", players)
@@ -38,7 +37,7 @@ io.on("connect", function(socket){
             socket.broadcast.emit("Player 2 Joined");
         }
     });
-    
+
     socket.on('Try Move', function(row, column, id) {
         move(row, column, id);
     });
@@ -52,7 +51,7 @@ io.on("connect", function(socket){
     });
 });
 
-app.listen(8000);
+server.listen(8000);
 
 async function move(row, column, id) { // Performs a move for the current player
     let status; 
