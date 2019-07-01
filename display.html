@@ -11,7 +11,6 @@
     </div>
     <div id="Player Status">
         <label id=pid> Player ID: </label> <br>
-        <label id=status> </label>
     </div>
     <div class="currentPlayer">
         <div id="turn">
@@ -67,6 +66,10 @@
             <div id="draws"> Draws: 0 </div> <br>
 
         </div>
-	    <script src="main.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io();
+        </script>
+        <script src="main.js"></script>
     </body>
 </html>
