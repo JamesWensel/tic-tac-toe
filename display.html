@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>TIC-TAC-TOE</title>
+        <link href='style.css' type='text/css' rel='stylesheet'>
+    </head>
+    <body>
+    <div id="title">
+        <label> TIC-TAC-TOE </label>
+    </div>
+    <div id="Player Status">
+        <label id=pid> Player ID: </label> <br>
+        <label id=status> </label>
+    </div>
+    <div class="currentPlayer">
+        <div id="turn">
+            <label id="turn-text"> Player 1's turn </label>
+        </div>
+    </div>
+
+        <table>
+            <tr>
+                <th>
+                    <button class="boardButton" id="00" onclick=move(0,0)> </button>
+                </th>
+                <th>
+                    <button class="boardButton" id=01 onclick=move(0,1)> </button>
+                </th>
+                <th>
+                    <button class="boardButton" id="02" onclick=move(0,2)>  </button>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <button class="boardButton" id="10" onclick=move(1,0)>  </button>
+                </th>
+                <th>
+                    <button class="boardButton" id="11" onclick=move(1,1)>  </button>
+                </th>
+                <th>
+                    <button class="boardButton" id="12" onclick=move(1,2)>  </button>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <button class="boardButton" id="20" onclick=move(2,0)>  </button>
+                </th>
+                <th>
+                    <button class="boardButton" id="21" onclick=move(2,1)>  </button>
+                </th>
+                <th>
+                    <button class="boardButton" id="22" onclick=move(2,2)>  </button>
+                </th>
+            </tr>
+
+        </table>
+        <div class="restartButton">
+            <button id="resetBoard" onclick=reset() disabled = true> Restart game </button>
+        </div>
+
+        <div id="scoreboard">
+            <strong> Scoreboard </strong> <br>
+
+            <div id="oneWins"> Player 1 wins: 0 </div>
+            <div id="twoWins"> Player 2 wins: 0 </div>
+            <div id="draws"> Draws: 0 </div> <br>
+
+        </div>
+	    <script src="main.js"></script>
+    </body>
+</html>
