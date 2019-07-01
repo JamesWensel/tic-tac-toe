@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express(); 
 const server = require('http').Server(app);
-const bodyParser = require('body-parser');
+const io = require('socket.io')(server); 
 
 var board = [ // 2D array signifying the board
     [0, 0, 0],
@@ -20,33 +20,54 @@ let playerOneWins = 0; // How many wins for player 1
 let playerTwoWins = 0; // How many wins for player 2
 let draws = 0; // Number of draws
 
-app.use(express.static('.'));
-app.use(bodyParser.json());
+let players = 0; // Number of players connected
+
+app.use(express.static('.')); 
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/display.html'); 
 }); 
 
-app.put('/move', (req, res) => {
-    move(req.query.row, req.query.column, res);
+io.on("connect", function(socket){
+    players ++; 
+    console.log(players);
+
+    socket.on("Player Number", function() {
+        socket.emit("Joined", players)
+        if (players == 2) {
+            socket.broadcast.emit("Player 2 Joined");
+        }
+    });
+    
+    socket.on('Try Move', function(row, column, id) {
+        move(row, column, id);
+    });
+
+    socket.on('Reset', function() {
+        reset(); 
+    })
+
+    socket.on('disconnect', function(){
+        players --;
+    });
 });
 
-app.put('/reset', (req, res) => {
-    reset(res); 
-})
+app.listen(8000);
 
-server.listen(process.env.PORT || 5000);
-
-
-async function move(row, column, res) { // Performs a move for the current player
+async function move(row, column, id) { // Performs a move for the current player
     let status; 
     
     if (gameOver) {
         status = 3; // 3 = Game is already over
     }
-    else if(board[row][column] != 0) // Checks if there the selected space has already been selected
-    {
+    else if(board[row][column] != 0) {// Checks if there the selected space has already been selected
         status = 4; // 4 = Space already chosen 
+    }
+    else if (id != currentPlayer) {
+        status = 5; 
+    }
+    else if (players < 2) {
+        status = 6; 
     }
     else {
         board[row][column] = currentPlayer; // Sets the correct space to the current player
@@ -54,7 +75,7 @@ async function move(row, column, res) { // Performs a move for the current playe
     }
 
     let wins = isDraw ? draws : currentPlayer == 1 ? playerOneWins : playerTwoWins; 
-    res.send("Move: " + row + " " + column + " " + status + " " + currentPlayer + " " + wins);
+    io.emit("Move", row, column, status, currentPlayer, wins, id);
     if (status < 2) currentPlayer = currentPlayer == 1 ? 2:1; // Set current player to next player
 }
 
@@ -111,5 +132,5 @@ function reset(res) { // Resets the game board but not the wins
     gameOver = 0;
     isDraw = 0; 
 
-    res.send("Reset: " + currentPlayer);
+    io.emit("Reset Update", currentPlayer);
 }
