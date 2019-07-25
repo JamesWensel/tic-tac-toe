@@ -28,54 +28,56 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/display.html'); 
 }); 
 
-io.on("connect", function(socket){
-    players ++; 
+io.on("connect", function(socket){ // Handles what happens upon connection, defines all function for socket
+    players ++; // Increases number of players in the game
 
-    socket.on("Player Number", function() {
-        socket.emit("Joined", players)
-        if (players == 2) {
-            socket.broadcast.emit("Player 2 Joined");
+    socket.on("Player Number", function() { // Called immediately upon player joining game, sends back their player ID
+        socket.emit("Joined", players) // Returns a succesful message to the client with its ID
+        if (players == 2) { // If the player joining is the second
+            socket.broadcast.emit("Player 2 Joined"); // Tells the first player Player 2 Joined
         }
     });
 
-    socket.on('Try Move', function(row, column, id) {
-        move(row, column, id);
+    socket.on('Try Move', function(row, column, id) { // On an atempted move
+        move(row, column, id); // Function to make move
     });
 
-    socket.on('Reset', function() {
-        reset(); 
+    socket.on('Reset', function() { // On reset of the game board
+        reset(); // Function to reset the game board
     })
 
-    socket.on('disconnect', function(){
-        players --;
+    socket.on('disconnect', function(){ // On player disconnecting 
+        players --; // Remove one from total players
     });
 });
 
-server.listen(8000);
+server.listen(8000); // Start listening to server on local port 8000
 
 async function move(row, column, id) { // Performs a move for the current player
-    let status; 
+    let status; // Status of the move (0-1 are successful, 2-6 are unsuccessful)
     
-    if (gameOver) {
+    if (gameOver) { // If the game is over
         status = 3; // 3 = Game is already over
     }
     else if(board[row][column] != 0) {// Checks if there the selected space has already been selected
         status = 4; // 4 = Space already chosen 
     }
-    else if (id != currentPlayer) {
-        status = 5; 
+    else if (id != currentPlayer) { // If the id of the move is not the current player
+        status = 5; // 5 = Move made by player when it is not their turn
     }
-    else if (players < 2) {
-        status = 6; 
+    else if (players < 2) { // If there are less than 2 players on the server
+        status = 6; // 6 = Not enough players to begin the game
     }
-    else {
+    else { // The move is valid 
         board[row][column] = currentPlayer; // Sets the correct space to the current player
-        status = await checkWin();
+        status = await checkWin(); // Checks to see if the game has been won and waits for the response
     }
 
+    // Checks to see who the current player is and how many wins they have if the game did not end in a draw
     let wins = isDraw ? draws : currentPlayer == 1 ? playerOneWins : playerTwoWins; 
+    // Send the move made, the status of the move, the player who made the move, and how many wins they have
     io.emit("Move", row, column, status, currentPlayer, wins, id);
-    if (status < 2) currentPlayer = currentPlayer == 1 ? 2:1; // Set current player to next player
+    currentPlayer = currentPlayer == 1 ? 2:1 // Set current player to next player
 }
 
 function checkWin() { // Checks to see if a win condition has been met

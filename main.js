@@ -16,7 +16,7 @@ function moveUpdate(row, column, status, currentPlayer, wins, player) {
         else document.getElementById('turn-text').innerHTML = "Player " + currentPlayer + "'s Turn"; // Update text to reflect the next turn
     }
     else if (player == id){
-        let alertText = status == "3" ? "The Game is Over" : status == 4 ? "That Space Has Been Chosen Already" : "It's Not Your Turn!"; // Set the alert text to the correct text
+        let alertText = status == "3" ? "The Game is Over" : status == 4 ? "That Space Has Already Been Chosen" : "It's Not Your Turn"; // Set the alert text to the correct text
                                                                                             // depending on what type of invalid move was made
         window.alert(alertText); // Alert the client of the invalid move
     } 
